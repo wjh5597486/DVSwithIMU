@@ -7,17 +7,21 @@ import cv2 as cv
 import dv_processing as dv
 import numpy as np
 
+from pyomyo import Myo, emg_mode
+
+import multiprocessing
+
 
 def filter_data(filter_module, data):
     filter_module.accept(data)
     return filter_module.generateEvents()
 
 
+
 class DVSmodel:
     def __init__(self, args):
         # initialize device
         self.device = dv.io.CameraCapture()
-        assert self.device.getCameraName(), "No camera found"
 
         # record setting
         self.record_interval = args.record_interval
@@ -69,6 +73,20 @@ class DVSmodel:
         # INIT
         self.init()
 
+
+        ### IMU setting
+        self.myo = Myo(mode=emg_mode.FILTERED)
+        self.myo.connect()
+        self.imu_queue = multiprocessing.Queue()
+
+        def add_to_queue(quat, acc, gyro):
+            if self.recording:
+                imu_data = [quat, acc, gyro]
+                self.imu_queue.put(imu_data)
+
+        self.myo.add_imu_handler(add_to_queue)
+
+
     def init(self):
         # on window
         cv.namedWindow("Preview", cv.WINDOW_NORMAL)
@@ -117,7 +135,7 @@ class DVSmodel:
             if len(frames[-1].image.shape) == 3:
                 latest_image = frames[-1].image
             else:
-                latest_image = cv.cvtColor(frames[-1].images, cv.COLOR_GRAY2BGR)
+                latest_image = cv.cvtColor(frames[-1].image, cv.COLOR_GRAY2BGR)
         else:
             return
 
@@ -131,24 +149,41 @@ class DVSmodel:
 
         # add text
         if self.recording:
-            text = "RECODING"
+            text = f"RECODING, {self.record_end_time - datetime.datetime.now().timestamp():.2f}"
+            color = (50, 50, 200)  # B, G, R
         else:
-            text = f"   {self.record_start_time - datetime.datetime.now().timestamp():.2f}"
+            text = f"WAITING   {self.record_start_time - datetime.datetime.now().timestamp():.2f}"
+            color = (200, 200, 200)  # B, G, R
 
         image = cv.putText(img=image,
                        text=text,
                        org=(30, 150),
                        fontFace=cv.FONT_HERSHEY_SIMPLEX,
-                       fontScale=2,
-                       color=(150, 150, 150),
+                       fontScale=1.0,
+                       color=color,
                        thickness=2)
 
-        cv.imshow("Preview", image)
+        self.image_scale = 6
+        height, width = image.shape[:2]
+        new_size = (self.image_scale*width, self.image_scale*height)
+        resized_image = cv.resize(image, new_size, interpolation=cv.INTER_LINEAR)
+        cv.imshow("Preview", resized_image)
+
+
+        if not self.recording:
+            self.empty_store()  # empty memory
 
         if cv.waitKey(1) == 27:  # 10:enter, 27: esc, 32: space,
             exit(0)
 
-    def record(self):
+    def collect_imu(self, q, event):
+        self.myo.connect()
+        while self.recording:
+            self.myo.run()
+            print(123)
+
+    def collect_dvs(self, recoding_queue):
+
         self.recording = False
         # time setting
         start_time = datetime.datetime.now().timestamp()
@@ -156,10 +191,21 @@ class DVSmodel:
         self.record_end_time = start_time + self.record_time + self.record_interval + 0.05
 
         while self.device.isRunning():
+            cur_time = datetime.datetime.now().timestamp()
+
+            # start the recoding
+            self.recording = cur_time >= self.record_start_time
+
+            # finish the recoding
+            if cur_time >= self.record_end_time:
+                break
+
+            # event
             events = self.device.getNextEventBatch()
             if events is not None:
                 self.slicer.accept("events", events)
 
+            # frame
             frame = self.device.getNextFrame()
             if frame is not None:
                 for f in self.frame_filters:
@@ -169,12 +215,22 @@ class DVSmodel:
             # compute cur_time
             cur_time = datetime.datetime.now().timestamp()
 
-            # start the recoding
-            self.recording = cur_time >= self.record_start_time
+    def check1(self):
+        ...
+    def check2(self):
+        ...
 
-            # finish the recoding
-            if cur_time >= self.record_end_time:
-                break
+    def record(self):
+        # multiprocessing imu
+        p_imu = multiprocessing.Process(target=self.check1, args=())
+        p_dvs = multiprocessing.Process(target=self.check2, args=())
+
+        p_imu.start()
+        p_dvs.start()
+
+        p_imu.join()
+        p_dvs.join()
+
 
     def filtering(self):
         for i in range(len(self.event_store)):

@@ -1,10 +1,9 @@
 import pickle
-
 import cv2 as cv
 import numpy as np
 
-SUB = 10
-CLS = 10
+SUB = 100
+CLS = 1
 IDX = 1
 
 FRAME = 1
@@ -12,7 +11,7 @@ EVENT = 1
 stop_point = ...
 # idx or None
 
-path = f"data/{SUB:03}/SubClsIdx_{SUB:03}_{CLS:03}_{IDX:03}"
+path = f"../data/{SUB:03}/SubClsIdx_{SUB:03}_{CLS:03}_{IDX:03}"
 
 # load frames
 frames = np.load(path + ".npy")
@@ -21,6 +20,9 @@ with open(path + ".pkl", "rb") as f:
     events = pickle.load(f)
 
 cv.namedWindow("Preview", cv.WINDOW_NORMAL)
+
+
+print(len(frames), len(events))
 
 for idx, (image, event) in enumerate(zip(frames, events)):
     if idx == stop_point:
