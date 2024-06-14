@@ -1,0 +1,3 @@
+opencv-python
+pyomyo
+dv_processing

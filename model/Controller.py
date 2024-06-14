@@ -4,6 +4,18 @@ from model.DVS import DVS
 import os
 import pickle
 import numpy as np
+import threading
+import sys
+
+
+def beep(sound):
+    os.system(f'afplay /System/Library/Sounds/{sound}.aiff')
+
+
+start_beep = threading.Thread(target=beep, args=("Tink",))
+start_beep.daemon = True
+# end_beep = threading.Thread(target=beep, args=("Pop",))
+# end_beep.daemon = True
 
 
 class Controller:
@@ -30,6 +42,8 @@ class Controller:
         record_start_time = start_time + self.record_interval
         record_end_time = record_start_time + self.record_duration + 0.1
 
+        beep = True
+
         # run devices by record_end_time
         cur_time = datetime.now().timestamp()
         while cur_time < record_end_time:
@@ -40,12 +54,15 @@ class Controller:
             # compute recoding and time
             recording = bool(cur_time >= record_start_time)  # check record or waiting
             remain_time = record_end_time - cur_time if recording else record_start_time - cur_time
+            # beep
+            if beep and recording:
+                beep = False
+                start_beep.start()
 
             # run devices
             self.dvs.run(recording, remain_time)
             if self.save_imu:
                 self.imu.run(recording, remain_time)
-
 
     def save(self):
         """
@@ -56,15 +73,17 @@ class Controller:
         # load
         event, frame = self.dvs.load_data()
         imu = self.imu.load_data()
+        print(f"\n {[len(frame), len(event), len(imu)] = }")
 
         expected_len_frame = self.dvs.fps * self.record_duration  # frame per second * duration
         expected_len_event = self.dvs.fps * self.record_duration  # frame per second * duration
         expected_len_imu = 50 * self.record_duration * self.save_imu  # imu frequency * duration
 
         # check length of data.
-        length_check = (len(frame) >= expected_len_frame, len(event) >= expected_len_event, len(imu) >= expected_len_imu)
+        length_check = (
+            len(frame) >= expected_len_frame, len(event) >= expected_len_event, len(imu) >= expected_len_imu)
         if length_check != (True, True, True):
-            return "The lengths of data are not enough"
+            raise Exception(f"The lengths of data are not enough")
 
         # cut the length
         frame = frame[:expected_len_frame]
@@ -93,7 +112,6 @@ class Controller:
             return True  # All saves were successful
 
         except Exception as e:
-
             # Delete the files that were partially saved
             if os.path.exists(event_path):
                 os.remove(event_path)
@@ -104,7 +122,7 @@ class Controller:
             return e
 
     def get_paths(self):
-        save_folder_path = self.save_path
+        save_folder_path = self.save_path + f"/{self.id:03}/"
         if not os.path.exists(save_folder_path):
             os.makedirs(save_folder_path)
             print(f'{save_folder_path} has been created.')
@@ -124,17 +142,18 @@ class Controller:
         self.dvs.empty()
 
     def start(self):
-        # initial check
+        # initial check, won't be saved.
         self.run()
+        self.empty()
+
         if self.imu:
             self.imu.show = False
-
         # recording
-        while self.repeat:
+        while self.repeat > 0:
             self.run()
-            success_to_save = self.save()  # save
-            if not success_to_save:
-                print("Error occurred while saving data:", success_to_save)
+            try:
+                self.save()  # save
                 self.repeat -= 1
+            except Exception as e:
+                print(e)
             self.empty()
-

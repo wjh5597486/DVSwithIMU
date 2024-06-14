@@ -18,6 +18,7 @@ class DVS:
         # SAVE - hyperparameter
         self.max_event_num = args.max_event_num
         self.fps = args.fps
+        self.display_scale = args.display_scale
 
         # devices
         self.device = dv.io.CameraCapture()
@@ -30,7 +31,6 @@ class DVS:
         self.decay_filter = args.decay_filter
         self.remain_time = None
         self.recording = None
-
 
         self.visualizer = dv.visualization.EventVisualizer(self.resolution,
                                                            dv.visualization.colors.white(),
@@ -74,6 +74,9 @@ class DVS:
                 for f in self.frame_filters:
                     frame = filter_data(f, frame)
                 self.slicer.accept("frames", [frame])
+
+        if not recording:
+            self.empty()
 
     def add_event_filter(self, **kwargs):
         if self.noise_filter:
@@ -119,6 +122,11 @@ class DVS:
         image = cv.putText(img=image, text=text, org=(30, 150), fontFace=cv.FONT_HERSHEY_SIMPLEX,
                            fontScale=1.3, color=color, thickness=2)
 
+        # scale
+        height, width = image.shape[:2]
+        image = cv.resize(image, (int(width*self.display_scale), int(height*self.display_scale)),
+                          interpolation=cv.INTER_LINEAR)
+
         # cv show
         cv.imshow("Preview", image)
         if cv.waitKey(1) == 27:  # 10:enter, 27: esc, 32: space,
@@ -140,10 +148,11 @@ class DVS:
         else:
             pass
 
-
     def load_data(self):
         return self.event_store, self.frame_store
 
     def empty(self):
         self.event_store = []
         self.frame_store = []
+
+
