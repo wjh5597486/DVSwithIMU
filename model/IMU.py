@@ -11,16 +11,17 @@ class IMU:
         # device
         # if device is running, the handler function will be executed
         self.device = Myo(mode=emg_mode.RAW)
+        # self.device = Myo(mode=emg_mode.PREPROCESSED)
         self.device.add_imu_handler(self.store_data)
         self.device.connect()  # device on
 
-        # device parameter
-        self.recording: bool = False
-        self.remain_time: float = 0.0
+        # device variables.
+        self.recording = False
+        self.remain_time = 0.0
 
         # storage
         self.storage = []
-
+        self.i = 0
 
     def store_data(self, quat: tuple, gyro: tuple, accl: tuple):
         if self.show:
@@ -43,6 +44,8 @@ class IMU:
         self.recording = recording
         self.remain_time = remain_time
         self.device.run()
+        # if recording:
+        #     self.device.run()
 
     def close(self):
         self.device.disconnect()

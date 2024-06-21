@@ -19,4 +19,5 @@ Subject
 3: Chungsub Lee
 4: Yusang Nam
 5: Jiseuck Yang
+10: hyunju Song
 AttributeError: 'dv_processing.Frame' object has no attribute 'images'. Did you mean: 'image'?

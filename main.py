@@ -2,19 +2,18 @@ from model.Controller import Controller
 import argparse
 
 ctr_parser = argparse.ArgumentParser(description="Control Options")
-imu_parser = argparse.ArgumentParser(description="IMU Options")
+imu_parser = argparse.ArgumentParser(description="IMU Optons")
 dvs_parser = argparse.ArgumentParser(description="Frame and Event Options")
-
 # Add arguments to control options group
 ctr_parser.add_argument("--save_imu", type=bool, default=True)
 
-ctr_parser.add_argument("--subject", type=int, default=0, help="")
-ctr_parser.add_argument("--action", type=int, default=3, help="")
-ctr_parser.add_argument("--file_idx", type=int, deault=1, help="It automatically checks and increases")
+ctr_parser.add_argument("--subject", type=int, default=10, help="")
+ctr_parser.add_argument("--action", type=int, default=1, help="")
+ctr_parser.add_argument("--file_idx", type=int, default=1, help="It automatically checks and increases")
 ctr_parser.add_argument("--record_interval", type=float, default=3, help="waiting time before recording")
 ctr_parser.add_argument("--record_duration", type=float, default=3, help="record time")
 ctr_parser.add_argument("--save_path", type=str, default="./data/")
-ctr_parser.add_argument("--repeat", type=int, default=11, help="Repeat time")
+ctr_parser.add_argument("--repeat", type=int, default=10, help="Repeat time")
 
 
 # Add arguments to IMU options group

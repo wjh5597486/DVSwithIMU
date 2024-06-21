@@ -2,9 +2,9 @@ import numpy as np
 import cv2 as cv
 import pickle
 
-SUB = 1
-CLS = 10
-IDX = 2
+SUB = 0
+CLS = 1
+IDX = 5
 
 FRAME = 1
 EVENT = 1

@@ -5,17 +5,18 @@ import os
 import pickle
 import numpy as np
 import threading
+import time
 import sys
 
 
 def beep(sound):
     os.system(f'afplay /System/Library/Sounds/{sound}.aiff')
 
+def beep_sound(sound="Tink"):
+    th = threading.Thread(target=beep, args=(sound,))
+    th.daemon = True
+    th.start()
 
-start_beep = threading.Thread(target=beep, args=("Tink",))
-start_beep.daemon = True
-# end_beep = threading.Thread(target=beep, args=("Pop",))
-# end_beep.daemon = True
 
 
 class Controller:
@@ -43,11 +44,9 @@ class Controller:
         record_end_time = record_start_time + self.record_duration + 0.1
 
         beep = True
-
         # run devices by record_end_time
         cur_time = datetime.now().timestamp()
         while cur_time < record_end_time:
-
             # compute time.
             cur_time = datetime.now().timestamp()
 
@@ -57,12 +56,16 @@ class Controller:
             # beep
             if beep and recording:
                 beep = False
-                start_beep.start()
+                beep_sound("Tink")
 
             # run devices
             self.dvs.run(recording, remain_time)
-            if self.save_imu:
-                self.imu.run(recording, remain_time)
+            self.imu.run(recording, remain_time)
+            # if recording and self.save_imu:
+            #     self.imu.run(recording, remain_time)
+
+        beep_sound("Pop")
+
 
     def save(self):
         """
@@ -148,6 +151,7 @@ class Controller:
 
         if self.imu:
             self.imu.show = False
+
         # recording
         while self.repeat > 0:
             self.run()
@@ -157,3 +161,7 @@ class Controller:
             except Exception as e:
                 print(e)
             self.empty()
+
+
+        time.sleep(0.25)
+        beep_sound("Purr")
