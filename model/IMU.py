@@ -2,32 +2,28 @@ from pyomyo import Myo, emg_mode
 
 class IMU:
     def __init__(self, args):
-        # hyperparameter to Save
+        # Hyperparameters to control the saved data
         self.gyro = args.gyro
         self.quat = args.quat
         self.accl = args.accl
         self.show = True
 
-        # device
-        # if device is running, the handler function will be executed
+        # Myo device initialization
         self.device = Myo(mode=emg_mode.RAW)
-        # self.device = Myo(mode=emg_mode.PREPROCESSED)
         self.device.add_imu_handler(self.store_data)
-        self.device.connect()  # device on
+        self.device.connect()  # Connect to the Myo device
 
-        # device variables.
+        # Device variables for recording state
         self.recording = False
-        self.remain_time = 0.0
-
-        # storage
         self.storage = []
-        self.i = 0
 
     def store_data(self, quat: tuple, gyro: tuple, accl: tuple):
+        """Handler function to store IMU data when recording."""
         if self.show:
-            print(quat, gyro, accl)
+            print(f"Quaternion: {quat}, Gyroscope: {gyro}, Accelerometer: {accl}")
         if self.recording:
-            data = ()
+            # Selectively store gyro, quat, accl based on flags
+            data = tuple()
             if self.gyro:
                 data += gyro
             if self.quat:
@@ -38,18 +34,18 @@ class IMU:
             self.storage.append(data)
 
     def empty(self):
-        self.storage = []
+        """Clear the stored IMU data."""
+        self.storage.clear()
 
     def run(self, recording: bool, remain_time: float):
+        """Run the Myo device if recording is enabled."""
         self.recording = recording
-        self.remain_time = remain_time
         self.device.run()
-        # if recording:
-        #     self.device.run()
 
     def close(self):
+        """Disconnect the Myo device."""
         self.device.disconnect()
 
     def load_data(self):
+        """Return the stored IMU data."""
         return self.storage
-
