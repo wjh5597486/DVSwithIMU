@@ -1,0 +1,23 @@
+
+Action Class
+1: Standing
+2: Walking
+3: Running
+4: Jumping
+5: Throwing
+6: Punching
+7: Kicking
+8: Hands up
+9: Squirt
+10: Bowing
+
+
+Subject
+0: Jihwan Won
+1: Junghwan Kim
+2: Geunbo Yang
+3: Chungsub Lee
+4: Yusang Nam
+5: Jiseuck Yang
+10: hyunju Song
+AttributeError: 'dv_processing.Frame' object has no attribute 'images'. Did you mean: 'image'?

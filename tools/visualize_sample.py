@@ -110,7 +110,7 @@ if __name__ == "__main__":
     # 설정 값
     SUB = 1
     CLS = 1
-    IDX = 2
+    IDX = 100
     FRAME_ENABLED = True
     EVENT_ENABLED = True
     STOP_POINT = None  # None or set a specific frame index to stop
