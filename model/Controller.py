@@ -173,3 +173,4 @@ class Controller:
         recording = cur_time >= record_start_time
         remain_time = record_end_time - cur_time if recording else record_start_time - cur_time
         return recording, remain_time
+
