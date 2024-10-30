@@ -35,6 +35,7 @@ ctr_args = argparse.Namespace(
     save_imu=args.save_imu,
     subject=args.subject,
     action=args.action,
+    fps=args.fps,
     record_interval=args.record_interval,
     record_duration=args.record_duration,
     repeat=args.repeat,

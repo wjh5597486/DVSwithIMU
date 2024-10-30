@@ -82,6 +82,8 @@ class Controller:
         self.action = ctr_args.action
         self.file_idx = ctr_args.file_idx
 
+        self.frame_numbers = ctr_args.fps * ctr_args.record_duration
+
     def run_recording(self):
         """Run the data collection process for IMU and DVS."""
         try:

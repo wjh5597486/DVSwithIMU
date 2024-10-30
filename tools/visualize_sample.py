@@ -52,7 +52,6 @@ def display_video(frames, events, frame_enabled=True, event_enabled=True, stop_p
 
         if event_enabled:
             frame = overlay_events_on_frame(frame, event)
-
         cv.imshow("Preview", frame)
         if cv.waitKey(100) == 27:  # ESC to exit
             break
@@ -110,8 +109,8 @@ if __name__ == "__main__":
     # 설정 값
     SUB = 1
     CLS = 1
-    IDX = 100
-    FRAME_ENABLED = True
+    IDX = 1
+    FRAME_ENABLED = False
     EVENT_ENABLED = True
     STOP_POINT = None  # None or set a specific frame index to stop
 
