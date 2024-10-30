@@ -48,6 +48,8 @@ class DVS:
         self.add_event_filters()
         self.add_jobs()
 
+        self.i = 0
+
     def add_jobs(self):
         """Run functions at regular intervals based on fps."""
         interval = timedelta(milliseconds=1000 // self.fps)
@@ -100,6 +102,10 @@ class DVS:
         if not frames:
             return
 
+        if self.recording:
+            self.i += 1
+            print(self.i)
+
         frame_image = frames[-1].image  # (260, 346)
         if len(frame_image.shape) != 3:
             frame_image = cv.cvtColor(frame_image, cv.COLOR_GRAY2BGR)  # (260, 346, 3)
@@ -107,12 +113,10 @@ class DVS:
         event_image = np.zeros_like(frame_image)
         event_image = self.visualizer.generateImage(events, event_image)
 
-        frame_image = cv.flip(frame_image, 1)
-        event_image = cv.flip(event_image, 1)
-
         self.frame_image_store.append(frame_image)
         self.event_image_store.append(event_image)
 
+        # show image
         image = np.concatenate((frame_image, event_image), axis=1)
         h, w = self.resolution
 
