@@ -58,7 +58,7 @@ dvs_args = argparse.Namespace(
 )
 
 # Initialize and start the controller
-imu = IMU(imu_args) if ctr_args.save_imu else None
+imu = None
 dvs = DVS(dvs_args)
 controller = Controller(ctr_args=ctr_args, imu=imu, dvs=dvs)
 controller.start()

@@ -22,10 +22,7 @@ def load_data(sub, cls, idx, base_path="../data"):
 
     # Load frames
     frames = np.load(path + "_frm.npy")
-
-    # Load event data
-    with open(path + "_evt.pkl", "rb") as f:
-        events = pickle.load(f)
+    events = np.load(path + "_evt.npy")
 
     return frames, events
 
@@ -110,8 +107,8 @@ if __name__ == "__main__":
     SUB = 1
     CLS = 1
     IDX = 1
-    FRAME_ENABLED = False
-    EVENT_ENABLED = True
+    FRAME_ENABLED = True
+    EVENT_ENABLED = False
     STOP_POINT = None  # None or set a specific frame index to stop
 
     # 시각화 실행

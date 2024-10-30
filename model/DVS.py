@@ -48,6 +48,8 @@ class DVS:
         self.add_event_filters()
         self.add_jobs()
 
+        self.i = 0
+
     def add_jobs(self):
         """Run functions at regular intervals based on fps."""
         interval = timedelta(milliseconds=1000 // self.fps)
@@ -71,8 +73,6 @@ class DVS:
                     frame = filter_data(f, frame)
                 self.slicer.accept("frames", [frame])
 
-        if not recording:
-            self.empty()
 
     def add_event_filters(self):
         """Add noise and decay filters for events."""
@@ -100,6 +100,16 @@ class DVS:
         if not frames:
             return
 
+        if self.recording:
+            self.i += 1
+            print(self.i)
+        else:
+            self.i = 0
+
+        self.frame_image_store.append(1)
+        self.event_image_store.append(1)
+
+        return
         frame_image = frames[-1].image  # (260, 346)
         if len(frame_image.shape) != 3:
             frame_image = cv.cvtColor(frame_image, cv.COLOR_GRAY2BGR)  # (260, 346, 3)
@@ -107,12 +117,8 @@ class DVS:
         event_image = np.zeros_like(frame_image)
         event_image = self.visualizer.generateImage(events, event_image)
 
-        frame_image = cv.flip(frame_image, 1)
-        event_image = cv.flip(event_image, 1)
 
-        self.frame_image_store.append(frame_image)
-        self.event_image_store.append(event_image)
-
+        # show image
         image = np.concatenate((frame_image, event_image), axis=1)
         h, w = self.resolution
 
@@ -139,21 +145,3 @@ class DVS:
         """Clear stored events and frames."""
         self.event_image_store.clear()
         self.frame_image_store.clear()
-
-
-
-
-    """ abandoned method"""
-    def store_data(self, data):
-        """Store frames and events during recording."""
-        if self.recording:
-            frames = data.getFrames("frames")
-            events = data.getEvents("events")
-            if frames:
-                self.frame_image_store.append(frames[-1].image)
-            if events is not None:
-                # Limit the number of events
-                events = np.random.choice(events.numpy(),
-                                          size=min(self.max_event_num, len(events)),
-                                          replace=False)
-                self.event_image_store.append(events)
