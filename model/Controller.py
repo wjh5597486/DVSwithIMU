@@ -143,6 +143,9 @@ class Controller:
 
     def start(self):
         """Start the data collection process and repeat as specified."""
+        if self.dvs:
+            self.dvs.empty()
+
         while self.repeat > 0:
             try:
                 self.run_recording()  # Record data
@@ -157,8 +160,6 @@ class Controller:
                 pass
                 # self.imu.empty()
 
-            if self.dvs:
-                self.dvs.empty()
 
             self.repeat -= 1
 

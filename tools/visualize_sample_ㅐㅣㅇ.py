@@ -27,7 +27,7 @@ def load_data(sub, cls, idx, base_path="../data"):
     return frames, events
 
 
-def display_video(frames, events, stop_point=None):
+def display_video(frames, events, frame_enabled=True, event_enabled=True, stop_point=None):
     """
     Display the video of frames and events with optional control over frame and event display.
 
@@ -44,14 +44,36 @@ def display_video(frames, events, stop_point=None):
         if stop_point is not None and idx == stop_point:
             wait_for_exit()
 
-        image = np.concatenate((frame, event), axis=1)
+        if not frame_enabled:
+            frame = np.zeros_like(frame)  # Remove frame by setting to black
 
-
-        cv.imshow("Preview", image)
+        if event_enabled:
+            frame = overlay_events_on_frame(frame, event)
+        cv.imshow("Preview", frame)
         if cv.waitKey(100) == 27:  # ESC to exit
             break
 
     cv.destroyAllWindows()
+
+
+def overlay_events_on_frame(frame, event):
+    """
+    Overlay event data onto the given frame.
+
+    Parameters:
+    - frame: The original frame to overlay the events on.
+    - event: List of events with (timestamp, x, y, polarity).
+
+    Returns:
+    - Modified frame with event overlay.
+    """
+    for _, x, y, polar in event:
+        if polar:  # Polarity positive -> set to green channel
+            frame[y, x, 1] = 255  # Green channel
+        else:  # Polarity negative -> set to red channel
+            frame[y, x, 2] = 255  # Red channel
+    return frame
+
 
 def wait_for_exit():
     """
@@ -62,7 +84,7 @@ def wait_for_exit():
             exit(0)
 
 
-def run_visualization(sub, cls, idx, stop_point=None):
+def run_visualization(sub, cls, idx, frame_enabled=True, event_enabled=True, stop_point=None):
     """
     Run the full visualization pipeline by loading data and displaying the video.
 
@@ -75,7 +97,7 @@ def run_visualization(sub, cls, idx, stop_point=None):
     - stop_point: Index to stop the video display (optional).
     """
     frames, events = load_data(sub, cls, idx)
-    display_video(frames, events, stop_point)
+    display_video(frames, events, frame_enabled, event_enabled, stop_point)
 
 
 
@@ -83,9 +105,11 @@ def run_visualization(sub, cls, idx, stop_point=None):
 if __name__ == "__main__":
     # 설정 값
     SUB = 1
-    CLS = 3
-    IDX = 2
+    CLS = 1
+    IDX = 1
+    FRAME_ENABLED = True
+    EVENT_ENABLED = False
     STOP_POINT = None  # None or set a specific frame index to stop
 
     # 시각화 실행
-    run_visualization(SUB, CLS, IDX, STOP_POINT)
+    run_visualization(SUB, CLS, IDX, FRAME_ENABLED, EVENT_ENABLED, STOP_POINT)
