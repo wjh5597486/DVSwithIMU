@@ -100,16 +100,6 @@ class DVS:
         if not frames:
             return
 
-        if self.recording:
-            self.i += 1
-            print(self.i)
-        else:
-            self.i = 0
-
-        self.frame_image_store.append(1)
-        self.event_image_store.append(1)
-
-        return
         frame_image = frames[-1].image  # (260, 346)
         if len(frame_image.shape) != 3:
             frame_image = cv.cvtColor(frame_image, cv.COLOR_GRAY2BGR)  # (260, 346, 3)
@@ -117,6 +107,8 @@ class DVS:
         event_image = np.zeros_like(frame_image)
         event_image = self.visualizer.generateImage(events, event_image)
 
+        self.frame_image_store.append(frame_image)
+        self.event_image_store.append(event_image)
 
         # show image
         image = np.concatenate((frame_image, event_image), axis=1)

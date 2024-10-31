@@ -4,7 +4,6 @@ import numpy as np
 import threading
 from datetime import datetime
 import platform
-import winsound
 
 
 def beep():

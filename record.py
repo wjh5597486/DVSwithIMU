@@ -1,7 +1,6 @@
 import argparse
 from model.Controller import Controller
 from model.DVS import DVS
-from model.IMU import IMU
 
 parser = argparse.ArgumentParser(description="Controller, DVS, and IMU Options")
 
