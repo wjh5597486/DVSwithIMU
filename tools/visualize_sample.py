@@ -83,8 +83,8 @@ def run_visualization(sub, cls, idx, stop_point=None):
 if __name__ == "__main__":
     # 설정 값
     SUB = 1
-    CLS = 3
-    IDX = 2
+    CLS = 1
+    IDX = 4
     STOP_POINT = None  # None or set a specific frame index to stop
 
     # 시각화 실행

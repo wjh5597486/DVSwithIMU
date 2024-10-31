@@ -83,18 +83,19 @@ class Controller:
     def run_recording(self):
         """Run the data collection process for IMU and DVS."""
         try:
+
             start_time, record_start_time, record_end_time = self._calculate_times()
 
             beep_pending = True
             cur_time = datetime.now().timestamp()
 
-            self.dvs.empty()
 
             while cur_time < record_end_time:
                 cur_time = datetime.now().timestamp()
                 recording, remain_time = self._calculate_recording_status(cur_time, record_start_time, record_end_time)
 
                 if beep_pending and recording:
+                    self.dvs.empty()
                     beep_pending = False
                     beep_sound("Tink")
 
@@ -124,14 +125,15 @@ class Controller:
         if self.dvs:
             # load data
             event_list, frame_list = self.dvs.load_data()
+            print(len(event_list), len(frame_list))
 
             # check data length
             if self.frame_numbers > len(event_list) or self.frame_numbers > len(frame_list):
                 print(f"Not enough data {len(event_list)=}, {len(frame_list)=}")
                 return
 
-            save_data_part(np.stack(frame_list[:self.frame_numbers]), frm_path)  # save frame
-            save_data_part(np.stack(event_list[:self.frame_numbers]), evt_path)  # save event
+            save_data_part(np.stack(frame_list[-self.frame_numbers:]), frm_path)  # save frame
+            save_data_part(np.stack(event_list[-self.frame_numbers:]), evt_path)  # save event
             save_data_part(np.array(self.action), cls_path)
 
         if self.imu:
