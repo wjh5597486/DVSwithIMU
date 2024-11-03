@@ -6,11 +6,11 @@ parser = argparse.ArgumentParser(description="Controller, DVS, and IMU Options")
 
 # Controller options
 parser.add_argument("--save_imu", action="store_true", help="Flag to save IMU data, default is False")
-parser.add_argument("--subject", type=int, default=1, help="Subject number")
+parser.add_argument("--subject", type=int, default=11, help="Subject number")
 parser.add_argument("--action", type=int, default=1, help="Action number")
 parser.add_argument("--record_interval", type=float, default=3, help="Waiting time before recording")
 parser.add_argument("--record_duration", type=float, default=3, help="Recording time in seconds")
-parser.add_argument("--repeat", type=int, default=10, help="Number of times to repeat recording")
+parser.add_argument("--repeat", type=int, default=22, help="Number of times to repeat recording")
 parser.add_argument("--save_path", type=str, default="./data/", help="Path to save data")
 parser.add_argument("--file_idx", type=int, default=1, help="Starting file index")
 

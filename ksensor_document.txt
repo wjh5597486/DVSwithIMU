@@ -6,7 +6,7 @@ Action Class
 4: Jumping
 5: Throwing
 6: Punching
-7: Kickingx
+7: Kicking
 8: Hands up
 9: Squirt
 10: Bowing

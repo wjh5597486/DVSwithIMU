@@ -117,7 +117,7 @@ class DVS:
         # Add recording status
         text = f"RECORDING {self.remain_time:.2f}" if self.recording else f"WAITING {self.remain_time:.2f}"
         color = (0, 0, 255) if self.recording else (255, 0, 0)
-        image = cv.rectangle(image, (0, 0), (h, w), color=color, thickness=15)
+        image = cv.rectangle(image, (0, 0), (h, w), color=color, qthickness=15)
         image = cv.putText(image, text, org=(30, 150), fontFace=cv.FONT_HERSHEY_SIMPLEX,
                            fontScale=1.3, color=color, thickness=2)
 
