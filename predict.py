@@ -81,13 +81,15 @@ for file_idx in range(args.file_idx, args.file_idx + args.repeat):
         label_pred = classifier(cls_feature)
 
     save_path = args.save_gen_path
+    new_dir_path = os.path.join(save_path, f'{args.subject:03}')
+    os.makedirs(new_dir_path, exist_ok=True)
     event_save_path = os.path.join(save_path, f'{args.subject:03}', event_name)
     label_save_path = os.path.join(save_path, f'{args.subject:03}', label_name)
 
     # save
-    # torch.save(event_generated, event_save_path)
-    # torch.save(label_pred, label_save_path)
-    # print(event_save_path)
-    # print(label_save_path)
+    torch.save(event_generated, event_save_path)
+    torch.save(label_pred, label_save_path)
+    print(event_save_path)
+    print(label_save_path)
 
 
