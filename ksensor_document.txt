@@ -8,7 +8,7 @@ Action Class
 6: Punching
 7: Kicking
 8: Hands up
-9: Squirt
+9: Squart
 10: Bowing
 
 
@@ -23,4 +23,3 @@ Subject
 11: Jihwan
 12: Hanwoong
 21: Jihwan
-AttributeError: 'dv_processing.Frame' object has no attribute 'images'. Did you mean: 'image'?

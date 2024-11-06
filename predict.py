@@ -18,10 +18,10 @@ import numpy as np
 parser = argparse.ArgumentParser()
 
 # data options
-parser.add_argument("--subject", type=int, default=11, help="Subject number")
-parser.add_argument("--action", type=int, default=1, help="Action number")
+parser.add_argument("--subject", type=int, default=31, help="Subject number")
+parser.add_argument("--action", type=int, default=10, help="Action number")
 parser.add_argument("--file_idx", type=int, default=1, help="Starting file index")
-parser.add_argument("--repeat", type=int, default=22, help="the total number of files")
+parser.add_argument("--repeat", type=int, default=10, help="the total number of files")
 parser.add_argument("--save_path", type=str, default="./data/", help="Path to save data")
 parser.add_argument("--save_gen_path", type=str, default="./data_gen/", help="Path to save data")
 

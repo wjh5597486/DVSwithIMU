@@ -5,10 +5,10 @@ import numpy as np
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--test_id', type=int, default=0)
-parser.add_argument('--subject', type=int, default=11)
-parser.add_argument('--action', type=int, default=9)
-parser.add_argument('--file_idx', type=int, default=11)
+parser.add_argument('--test_id', type=int, default=1)
+parser.add_argument('--subject', type=int, default=31)
+parser.add_argument('--action', type=int, default=10)
+parser.add_argument('--file_idx', type=int, default=1)
 parser.add_argument('--n', type=int, default=10)
 parser.add_argument('--h', type=int, default=5)
 parser.add_argument('--w', type=int, default=2)
@@ -96,13 +96,17 @@ for i in range(idx, idx + args.n):
 
     # put text on video,  frame[nothing], event[class], gen_event[class]
     put_text_on_video(input_frame, "frame", org=(10, 15), fontFace=cv.FONT_HERSHEY_SIMPLEX,
-                      fontScale=0.5, color=(255, 255, 255), thickness=1)
+                      fontScale=0.5, color=(80, 80, 80), thickness=1)
     put_text_on_video(input_event, "event", org=(10, 15), fontFace=cv.FONT_HERSHEY_SIMPLEX,
-                      fontScale=0.5, color=(255, 255, 255), thickness=1)
+                      fontScale=0.5, color=(80, 80, 80), thickness=1)
     put_text_on_video(output_event, "generated event", org=(10, 15), fontFace=cv.FONT_HERSHEY_SIMPLEX,
-                      fontScale=0.5, color=(255, 255, 255), thickness=1)
+                      fontScale=0.5, color=(80, 80, 80), thickness=1)
 
-    # put text on video,  frame[nothing], event[class], gen_event[class]
+    # put text on video,  Prediction
+    put_text_on_video(input_event, "label", org=(10, 100), fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                      fontScale=0.5, color=(150, 150, 150), thickness=1)
+    put_text_on_video(output_event, "prediction", org=(10, 100), fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                      fontScale=0.5, color=(150, 150, 150), thickness=1)
     put_text_on_video(input_event, input_class_text, org=(50, 120), fontFace=cv.FONT_HERSHEY_SIMPLEX,
                       fontScale=0.8, color=(255, 0, 0), thickness=2)
     put_text_on_video(output_event, output_class_text, org=(50, 120), fontFace=cv.FONT_HERSHEY_SIMPLEX,
@@ -125,7 +129,7 @@ videos = np.transpose(videos, (2, 0, 3, 1, 4, 5))
 videos = videos.reshape(t, args.h * h, args.w * w, c)
 
 index = 0  # 현재 프레임 인덱스
-while True:
+while 1:
     cv.imshow('Video', videos[index])
     if cv.waitKey(1000 // args.fps) == 27:
         break
@@ -135,3 +139,17 @@ while True:
         index = 0
 
 cv.destroyAllWindows()
+
+
+#
+# output_avi_path = f"./videos/SubClsIdx_{sub:03}_{cls:03}_{i:03}.avi"
+# time, height, width, channel = videos.shape
+# fourcc = cv.VideoWriter_fourcc(*'XVID')
+# out = cv.VideoWriter(output_avi_path, fourcc, 10, (width, height))
+#
+# for i in videos:
+#     out.write(i)
+#
+# out.release()
+# print(output_avi_path)
+#
