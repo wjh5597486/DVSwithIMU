@@ -7,8 +7,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--test_id', type=int, default=0)
 parser.add_argument('--subject', type=int, default=11)
-parser.add_argument('--action', type=int, default=1)
-parser.add_argument('--file_idx', type=int, default=1)
+parser.add_argument('--action', type=int, default=9)
+parser.add_argument('--file_idx', type=int, default=11)
 parser.add_argument('--n', type=int, default=10)
 parser.add_argument('--h', type=int, default=5)
 parser.add_argument('--w', type=int, default=2)
@@ -81,27 +81,35 @@ for i in range(idx, idx + args.n):
     input_event = np.load(event_path)
     input_frame = np.load(frame_path)
     input_class = np.load(class_path)
-    output_event = np.load(output_event_path)
+    output_event = np.load(output_event_path).astype(np.uint8)
     output_class = np.load(output_class_path)
 
     # rescaling
     t, h, w, c = input_event.shape
     input_frame = rescale_video(input_frame, args.scale)
     input_event = rescale_video(input_event, args.scale)
-    output_event = rescale_video(output_event, args.scale)
+    # output_event = rescale_video(output_event, args.scale)
 
     input_class_text = class_to_text[input_class.item()]
     output_class_text = class_to_text[output_class.item()]
     color = (255, 0, 0) if input_class_text == output_class_text else (0, 0, 255)
 
     # put text on video,  frame[nothing], event[class], gen_event[class]
-    put_text_on_video(input_event, input_class_text, org=(10, 40), fontFace=cv.FONT_HERSHEY_SIMPLEX,
-                      fontScale=0.8, color=color, thickness=2)
-    put_text_on_video(output_event, output_class_text, org=(10, 40), fontFace=cv.FONT_HERSHEY_SIMPLEX,
+    put_text_on_video(input_frame, "frame", org=(10, 15), fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                      fontScale=0.5, color=(255, 255, 255), thickness=1)
+    put_text_on_video(input_event, "event", org=(10, 15), fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                      fontScale=0.5, color=(255, 255, 255), thickness=1)
+    put_text_on_video(output_event, "generated event", org=(10, 15), fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                      fontScale=0.5, color=(255, 255, 255), thickness=1)
+
+    # put text on video,  frame[nothing], event[class], gen_event[class]
+    put_text_on_video(input_event, input_class_text, org=(50, 120), fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                      fontScale=0.8, color=(255, 0, 0), thickness=2)
+    put_text_on_video(output_event, output_class_text, org=(50, 120), fontFace=cv.FONT_HERSHEY_SIMPLEX,
                       fontScale=0.8, color=color, thickness=2)
 
     # Concatenate Videos horizontally
-    video = np.concatenate((input_frame, input_event, output_event), axis=2)
+    video = np.concatenate((input_frame, input_event, output_event), axis=2, dtype=np.uint8)
 
     # Draw outlines
     put_outline_on_video(video, color, thickness=3)
